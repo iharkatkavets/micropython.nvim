@@ -13,7 +13,7 @@ function M.mprun()
   --   return
   -- end
   local ampy_assembled_command = string.format(
-    'ampy -p %s -b %s run %s; %s',
+    'ampy -n -p %s -b %s run %s; %s',
     _G['AMPY_PORT'],
     _G['AMPY_BAUD'],
     nvim.nvim_buf_get_name(0),
@@ -24,7 +24,7 @@ function M.mprun()
 end
 
 local function assemble_command(path, type)
-  return string.format('ampy -p %s -b %s %s %s', _G['AMPY_PORT'], _G['AMPY_BAUD'], type, path)
+  return string.format('ampy -n -p %s -b %s %s %s', _G['AMPY_PORT'], _G['AMPY_BAUD'], type, path)
 end
 
 local function create_upload_all_commands_table(directory, ignore_list)
