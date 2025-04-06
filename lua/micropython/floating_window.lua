@@ -1,3 +1,5 @@
+-- lua/mpremote/floating_window.lua
+
 local state = {
   floating = {
     buf = -1,
@@ -5,7 +7,7 @@ local state = {
   },
 }
 
-local function open_bottom_float(opts)
+local function show_bottom_floating_window(opts)
   opts = opts or {}
 
   local width = opts.width or vim.o.columns
@@ -14,10 +16,8 @@ local function open_bottom_float(opts)
   local buf = nil
   if vim.api.nvim_buf_is_valid(opts.buf) then
     buf = opts.buf
-    print("Reuse buf")
   else
     buf = vim.api.nvim_create_buf(false, true)
-    print("Create buf")
   end
 
   local row = vim.o.lines - height - 2 -- Adjust for cmd line & statusline
@@ -42,7 +42,7 @@ end
 
 vim.api.nvim_create_user_command("Pico", function()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
-    state.floating = open_bottom_float({ buf = state.floating.buf })
+    state.floating = show_bottom_floating_window({ buf = state.floating.buf })
   else
     vim.api.nvim_win_hide(state.floating.win)
   end
