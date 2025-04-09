@@ -1,0 +1,33 @@
+*micropython.nvim*   A Neovim plugin for MicroPython device interaction
+
+==============================================================================
+DESCRIPTION
+
+This plugin provides integration with MicroPython boards via mpremote.
+
+==============================================================================
+COMMANDS
+
+:MPConnect              Connect to the device           *MPConnect*
+:MPRun {file.py}        Run a script on the device      *MPRun*
+:MPLog                  Display running logs            *MPLog*
+
+==============================================================================
+CONFIGURATION
+
+Use with lazy.nvim:
+
+    {
+      "iharkatkavets/micropython.nvim",
+      opts = {
+        port = "/dev/cu.usbmodem101",
+      },
+    }
+
+==============================================================================
+AUTHOR
+
+Written by Ihar Katkavets <job4ihar@gmail.com>
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl

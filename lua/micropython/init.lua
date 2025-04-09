@@ -8,10 +8,26 @@ local tools = require("micropython.tools")
 local configurator = require("micropython.configurator")
 local config = require("micropython.config")
 local job_manager = require("micropython.job_manager")
+local pico_proj = require("micropython.pico_proj")
 
 local M = {}
 
 local create_commands = function()
+  vim.api.nvim_create_user_command("MPInit", function(opts)
+    local target = opts.fargs[1]
+    if target == "pico" then
+      pico_proj.init()
+    else
+      vim.notify("Unknown MPInit target: " .. (target or ""), vim.log.levels.ERROR)
+    end
+  end, {
+    desc = "Init project",
+    nargs = 1,
+    complete = function()
+      return { "pico" }
+    end,
+  })
+
   vim.api.nvim_create_user_command("MPConnect", function()
     job_manager.stop_all_except_connect()
     connect.connect()

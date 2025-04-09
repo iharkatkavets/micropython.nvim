@@ -1,0 +1,4 @@
+MPConnect	micropython.txt	/*MPConnect*
+MPLog	micropython.txt	/*MPLog*
+MPRun	micropython.txt	/*MPRun*
+micropython.nvim	micropython.txt	/*micropython.nvim*
