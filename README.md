@@ -22,7 +22,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 -- init.lua:
 {
     'iharkatkavets/micropython.nvim', branch = 'main',
-    cmd = { 'MPInit', 'MPConnect', 'MPRun', 'MPLog' },
+    cmd = { 'MPInitPicoProj', 'MPConnect', 'MPRun', 'MPSelectPort', 'MPRunCurrent', 'MPUpload', 'MPLog' },
     opts = {
         port = '/dev/cu.usbmodem101',
     },
@@ -32,7 +32,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 return {
   {
     'iharkatkavets/micropython.nvim', branch = 'main',
-    cmd = { 'MPConnect', 'MPRun', 'MPLog' },
+    cmd = { 'MPInitPicoProj', 'MPConnect', 'MPRun', 'MPSelectPort', 'MPRunCurrent', 'MPUpload', 'MPLog' },
     opts = {
       port = '/dev/cu.usbmodem101',
     },

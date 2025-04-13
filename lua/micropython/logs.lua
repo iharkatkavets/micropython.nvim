@@ -21,6 +21,19 @@ local create_buf_if_needed = function(opts)
   end
 end
 
+local function add(msg)
+  local floating = state._logs.floating
+  state._logs.floating.buf = create_buf_if_needed(floating)
+  if vim.api.nvim_buf_is_valid(floating.buf) then
+    local lines = type(msg) == "table" and msg or vim.split(msg, "\n", {})
+    if vim.api.nvim_buf_get_lines(floating.buf, 0, 1, false)[1] == "" then
+      vim.api.nvim_buf_set_lines(floating.buf, 0, 1, false, lines)
+    else
+      vim.api.nvim_buf_set_lines(floating.buf, -1, -1, false, lines)
+    end
+  end
+end
+
 function M.show(opts)
   opts = opts or {}
   local width = opts.width or math.floor(vim.o.columns * 0.8)
@@ -47,29 +60,23 @@ function M.show(opts)
   state._logs.floating.win = win
 end
 
+M.sinfo = function(msg)
+  add(string.format("%s [INFO] %s", timestamp(), msg))
+end
+
 M.info = function(msg)
-  M.add(string.format("%s [INFO] %s", timestamp(), msg))
+  add(string.format("%s [INFO] %s", timestamp(), msg))
+  vim.notify(msg, vim.log.levels.INFO)
 end
 
 function M.warn(msg)
-  M.add(string.format("%s [WARN] %s", timestamp(), msg))
+  add(string.format("%s [WARN] %s", timestamp(), msg))
+  vim.notify(msg, vim.log.levels.WARN)
 end
 
 M.error = function(msg)
-  M.add(string.format("%s [ERROR] %s", timestamp(), msg))
-end
-
-function M.add(msg)
-  local floating = state._logs.floating
-  state._logs.floating.buf = create_buf_if_needed(floating)
-  if vim.api.nvim_buf_is_valid(floating.buf) then
-    local lines = type(msg) == "table" and msg or vim.split(msg, "\n", {})
-    if vim.api.nvim_buf_get_lines(floating.buf, 0, 1, false)[1] == "" then
-      vim.api.nvim_buf_set_lines(floating.buf, 0, 1, false, lines)
-    else
-      vim.api.nvim_buf_set_lines(floating.buf, -1, -1, false, lines)
-    end
-  end
+  add(string.format("%s [ERROR] %s", timestamp(), msg))
+  vim.notify(msg, vim.log.levels.ERROR)
 end
 
 function M.hide()

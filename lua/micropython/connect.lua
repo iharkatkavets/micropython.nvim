@@ -4,23 +4,26 @@ local state = require("micropython.state")
 local logs = require("micropython.logs")
 local configurator = require("micropython.configurator")
 local core = require("micropython.core")
+local tools = require("micropython.tools")
 
 local M = {}
 
-function M.connect()
-  if not state._opts.port then
+local function select_port_and_open_window()
+  if not state._opts.port or not tools.file_exists(state._opts.port) then
     configurator.pick_port(function(port)
       state._opts.port = port
-      M.show(state._opts)
+      select_port_and_open_window()
     end)
   else
-    M.show(state._opts)
+    M.open_window()
   end
 end
 
-M.show = function(opts)
-  opts = opts or {}
+function M.connect()
+  select_port_and_open_window()
+end
 
+M.open_window = function()
   local buf = state._connect.floating.buf
   if not buf or not vim.api.nvim_buf_is_valid(buf) then
     local prev_win = state._connect.floating.win
@@ -40,14 +43,16 @@ M.show = function(opts)
   end
 
   local job_id = state._connect.job_id
-  local port = opts.port
+  local port = state._opts.port
+  local cmd = { "mpremote", "connect", port }
+  logs.sinfo("Exec: " .. table.concat(cmd, " "))
   if job_id == 0 and port then
-    job_id = vim.fn.termopen({ "mpremote", "connect", port }, {
+    job_id = vim.fn.termopen(cmd, {
       on_exit = function()
         state._connect.floating.buf = -1
-        state._connect.job_id = 0
       end,
     })
+    logs.sinfo("`connect.job_id= " .. job_id)
   end
 
   vim.api.nvim_win_set_cursor(win, { vim.api.nvim_buf_line_count(buf), 0 })
@@ -56,26 +61,26 @@ M.show = function(opts)
   state._connect.job_id = job_id
 end
 
-M.close = function()
+M.close_window = function()
   vim.api.nvim_win_hide(state._connect.floating.win)
 end
 
 M.stop = function()
   if core.is_running(state._connect.job_id) then
-    logs.add("Stop Connect job_id " .. state._connect.job_id)
+    logs.sinfo("Stop `connect.job_id`= " .. state._connect.job_id)
     vim.fn.jobstop(state._connect.job_id)
     state._connect.job_id = 0
   end
 
   local prev_win = state._connect.floating.win
   if prev_win ~= -1 and vim.api.nvim_win_is_valid(prev_win) then
-    logs.add("Close Connect win " .. prev_win)
+    logs.sinfo("Close `connect.win`= " .. prev_win)
     vim.api.nvim_win_close(prev_win, true)
   end
 
   local buf = state._connect.floating.buf
   if buf ~= -1 and vim.api.nvim_buf_is_valid(buf) then
-    logs.add("Delete Connect buf " .. buf)
+    logs.sinfo("Delete `connect.buf`= " .. buf)
     vim.api.nvim_buf_delete(buf, { force = true })
   end
 
